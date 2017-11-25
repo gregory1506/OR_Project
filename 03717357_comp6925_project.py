@@ -26,7 +26,7 @@ def impressionList(M,k):
     return l
 
 def scaleNodeProb(A,comb,outcome):
-    alpha = 0.09
+    alpha = 0.15
     for person,action in zip(comb,outcome):
         A.nodes[person]['impression'] = True
         if action == '1':
@@ -72,5 +72,8 @@ for imp in impressionList(M,k):
         results[(imp,comb)] = expectedClicksForCombination
 
 
-print(max(results.items(), key=lambda x:x[1]))
+# print(max(results.items(), key=lambda x:x[1]))
+for key in results:
+    if results[key] > 2.6:
+        print(key, results[key])
 
