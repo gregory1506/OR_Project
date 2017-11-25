@@ -1,4 +1,4 @@
-import networkx
+import networkx as nx
 import itertools as it
 
 edges = []
