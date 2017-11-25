@@ -1,6 +1,18 @@
 import networkx
 import itertools as it
 
+edges = []
+with open("data.txt","r") as f:
+    for line in f:
+        edges.append(line.split())
+
+G = nx.from_edgelist(edges)
+print(G.nodes)
+print(G.edges)
+print(G.adj)
+print(G.degree)
+print(G['Pat'])
+
 M = 5
 k = 2
 def digitsum(M,k):
