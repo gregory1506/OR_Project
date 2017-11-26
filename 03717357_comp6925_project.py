@@ -2,7 +2,7 @@ import networkx as nx
 import itertools as it
 
 edges = []
-with open("data.txt","r") as f:
+with open("data_frompaper.txt","r") as f:
     for line in f:
         edges.append(line.split())
 
@@ -37,7 +37,7 @@ def scaleNodeProb(A,comb,outcome):
             if A.nodes[neighbors]['clicked'] == True:
                 n += 1
         f = len(A[node])
-        if n > 0:
+        if n >= 0:
             A.nodes[node]['prob'] += max(0,min(1,(0.25+alpha*n/f)))
 
 def clicksfromoutcome(B, imp, comb, outcome):
@@ -59,7 +59,7 @@ def maxProbs(C, num_probs):
     list_of_probs.sort(reverse=True)
     return sum(list_of_probs[:num_probs]) 
 
-M=5
+M=4
 k=2
 results = {}
 for imp in impressionList(M,k):
@@ -72,8 +72,8 @@ for imp in impressionList(M,k):
         results[(imp,comb)] = expectedClicksForCombination
 
 
-# print(max(results.items(), key=lambda x:x[1]))
-for key in results:
-    if results[key] > 2.6:
-        print(key, results[key])
+print(max(results.items(), key=lambda x:x[1]))
+# for key in results:
+#     if results[key] > 2.6:
+#         print(key, results[key])
 
