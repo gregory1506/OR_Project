@@ -1,11 +1,13 @@
 import networkx as nx
 import itertools as it
 
+#put edges in a list
 edges = []
 with open("data.txt","r") as f:
     for line in f:
         edges.append(line.split())
 
+# build graph from edge list and set default probability and attributes
 G = nx.from_edgelist(edges)
 for node in G:
     G.nodes[node]['prob'] = 0.25
@@ -14,6 +16,8 @@ for node in G:
 
 
 def impressionList(M,k):
+    ''' A method to return the possible ways to give impressions across stages. So supplied M=6 and k=3 it will produce a list that
+        starts like [006, 015, 105 ....... etc] '''
     l = []
     precision = k
     for i in range(pow(10,k)):
@@ -26,11 +30,14 @@ def impressionList(M,k):
     return l
 
 def scaleNodeProb(A,comb,outcome):
+    ''' Method that scales the probabilities in a Graph based on who clicks. Uses the metric described in assignment'''
     alpha = 0.15
+    # set attributes to show who got an impression and if they clicked
     for person,action in zip(comb,outcome):
         A.nodes[person]['impression'] = True
         if action == '1':
             A.nodes[person]['clicked'] = True        
+    #Looks for nodes that have not yet been given an impression and checks who clicked in order to calculate scale factor
     for node in A:
         if A.nodes[node]['impression'] == True:
             continue
@@ -42,6 +49,8 @@ def scaleNodeProb(A,comb,outcome):
         A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f)))
 
 def clicksfromoutcome(B, imp, comb, outcome):
+    ''' Calculates the expected number of clicks from a particular outcome. Since this is a 2 stage solution it just adds the best
+        set of probabilites from the next stage if they are available'''
     clicks = 0
     temp = 1.0
     for person,action in zip(comb, outcome):
@@ -53,6 +62,7 @@ def clicksfromoutcome(B, imp, comb, outcome):
     return (temp * (clicks + sum([x[0] for x in maxProbs(B, imp[1])])))
 
 def maxProbs(C, num_probs):
+    ''' returns a list containing the top probabilities of the last stage '''
     top_probs = []
     for node in C:
         if C.nodes[node]['impression'] == False:
@@ -64,16 +74,16 @@ M=5
 k=2
 results = {}
 for imp in impressionList(M,k):
+    # loops through (0,5) -> (1,4) -> (2,3) -> etc
     for comb in it.combinations(G.nodes(),imp[0]):
-        expectedClicksForCombination = 0
+        # loops through combinations of nodes choosing x at a time where x is the first element of the imp tuple
+        expectedClicksForCombination = 0 # reset the total clicks for this combination
         for outcome in it.product('01',repeat=imp[0]):
-            G1 = G.copy()
-            scaleNodeProb(G1,comb,outcome)
-            expectedClicksForCombination += clicksfromoutcome(G1, imp, comb, outcome)
-        results[(imp,comb)] = expectedClicksForCombination
-
-print(max(results.items(), key=lambda x:x[1]))
-# for key in results:
-#     if results[key] > 2.6:
-#         print(key, results[key])
-
+            # loops through the possible decision outcomes of the selected combination
+            G1 = G.copy() # make a deep copy of the main graph
+            scaleNodeProb(G1,comb,outcome) # scale the probabilities
+            expectedClicksForCombination += clicksfromoutcome(G1, imp, comb, outcome) # accumulate the expected clicks
+        results[(imp,comb)] = expectedClicksForCombination # add to a dictionary
+ans = max(results.items(), key=lambda x:x[1])
+print("The highest expected number of clicks is obtained by giving {} impressions in the first stage to {} and {} impressions in the last stage for a total of {} clicks"\
+      .format(ans[0][0][0],ans[0][1],ans[0][0][1],ans[1]))
