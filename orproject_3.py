@@ -1,7 +1,3 @@
-''' Operations Reserach : Project
-    03717357 ---> Gregory Ollivierre
-    8/12/2017 '''
-    
 import networkx as nx
 import itertools as it
 
@@ -36,6 +32,10 @@ def impressionList(M,k):
 def scaleNodeProb(A,comb,outcome):
     ''' Method that scales the probabilities in a Graph based on who clicks. Uses the metric described in assignment'''
     alpha = 0.15
+    beta = 0.01
+    diam = nx.diameter(A)
+    ecc = nx.eccentricity(A)
+    numnodes = nx.number_of_nodes(A)
     # set attributes to show who got an impression and if they clicked
     for person,action in zip(comb,outcome):
         A.nodes[person]['impression'] = True
@@ -50,7 +50,8 @@ def scaleNodeProb(A,comb,outcome):
             if A.nodes[neighbors]['clicked'] == True:
                 n += 1
         f = len(A[node])
-        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f)))
+        # A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f-0.01*ecc[node]/(diam+f))))
+        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/numnodes)))
 
 def clicksfromoutcome(B, imp, comb, outcome):
     ''' Calculates the expected number of clicks from a particular outcome. Since this is a 2 stage solution it just adds the best
@@ -90,4 +91,4 @@ for imp in impressionList(M,k):
         results[(imp,comb)] = expectedClicksForCombination # add to a dictionary
 ans = max(results.items(), key=lambda x:x[1])
 print("The highest expected number of clicks is obtained by giving {} impressions in the first stage to {} and {} impressions in the last stage for a total of {} clicks"\
-      .format(ans[0][0][0],ans[0][1],ans[0][0][1],ans[1]))
+    .format(ans[0][0][0],ans[0][1],ans[0][0][1],ans[1]))

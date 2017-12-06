@@ -16,8 +16,8 @@ for node in G:
 
 
 def impressionList(M,k):
-    ''' A method to return the possible ways to give impressions across stages. So supplied M=6 and k=3 it will produce a list that
-        starts like [006, 015, 105 ....... etc] '''
+    ''' A method to return the possible ways to give impressions across stages. So supplied M=6
+     and k=3 it will produce a list that starts like [006, 015, 105 ....... etc] '''
     l = []
     precision = k
     for i in range(pow(10,k)):
@@ -30,11 +30,12 @@ def impressionList(M,k):
     return l
 
 def scaleNodeProb(A,comb,outcome):
-    ''' Method that scales the probabilities in a Graph based on who clicks. Uses the metric described in assignment'''
+    ''' Method that scales the probabilities in a Graph based on who clicks. Uses a new metric'''
     alpha = 0.15
     beta = 0.01
     diam = nx.diameter(A)
     ecc = nx.eccentricity(A)
+    numnodes = nx.number_of_nodes(A)
     # set attributes to show who got an impression and if they clicked
     for person,action in zip(comb,outcome):
         A.nodes[person]['impression'] = True
@@ -50,11 +51,11 @@ def scaleNodeProb(A,comb,outcome):
                 n += 1
         f = len(A[node])
         # A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f-0.01*ecc[node]/(diam+f))))
-        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f-beta*ecc[node]/diam)))
+        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/numnodes)))
 
 def clicksfromoutcome(B, imp, comb, outcome):
-    ''' Calculates the expected number of clicks from a particular outcome. Since this is a 2 stage solution it just adds the best
-        set of probabilites from the next stage if they are available'''
+    ''' Calculates the expected number of clicks from a particular outcome. 
+        Since this is a 2 stage solution it just adds the best set of probabilites from the next stage if they are available'''
     clicks = 0
     temp = 1.0
     for person,action in zip(comb, outcome):
