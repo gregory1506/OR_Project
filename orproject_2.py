@@ -50,8 +50,7 @@ def scaleNodeProb(A,comb,outcome):
             if A.nodes[neighbors]['clicked'] == True:
                 n += 1
         f = len(A[node])
-        # A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f-0.01*ecc[node]/(diam+f))))
-        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/numnodes)))
+        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*pow(n/f,0.5))))
 
 def clicksfromoutcome(B, imp, comb, outcome):
     ''' Calculates the expected number of clicks from a particular outcome. 

@@ -1,5 +1,6 @@
 import networkx as nx
 import itertools as it
+import math
 
 #put edges in a list
 edges = []
@@ -51,7 +52,8 @@ def scaleNodeProb(A,comb,outcome):
                 n += 1
         f = len(A[node])
         # A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/f-0.01*ecc[node]/(diam+f))))
-        A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/numnodes)))
+        if n > 0:
+            A.nodes[node]['prob'] = max(0,min(1,(0.25+alpha*n/ecc[node])))
 
 def clicksfromoutcome(B, imp, comb, outcome):
     ''' Calculates the expected number of clicks from a particular outcome. Since this is a 2 stage solution it just adds the best
